@@ -1,21 +1,31 @@
-import Reakt, { Component } from './lib/reakt.js';
+import Reakt from './lib/reakt.js';
+import ReaktDOM, {Component} from './lib/reakt-dom.js';
 
-const Title = ({ text }) => Reakt.createElement(
-  'h1',
-  null,
-  props.text
-)
+class List extends Component {
 
-const App = () => Reakt.createElement(
-  'div',
-  null,
-  Reakt.createElement(
-    Title,
-    { text: 'hello props' }
+  render() {
+    return Reakt.createElement(
+      'div',
+      null,
+      Reakt.createElement('h1', null, "Pretzel Factory"),
+      Reakt.createElement('ul', null,
+        ...this.props.items.map(item => Reakt.createElement('li', null, item)))
+    )
+  }
+}
+
+const items = [];
+
+setInterval(() => {
+  items.push('\ud83e\udd68');
+  render(items);
+}, 1500)
+
+function render(items) {
+  ReaktDOM.render(
+    Reakt.createElement(List, { items }),
+    document.getElementById('app')
   )
-);
+}
 
-Reakt.render(
-  Reakt.createElement(App, {text: 'props form class'}),
-  document.getElementById('app')
-)
+render(items)
