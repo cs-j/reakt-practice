@@ -1,20 +1,40 @@
-import { isClass, isFunction, isString, isEvent } from './reakt-utils.js'
+import {isClass, isEvent, isFunction, isString} from './reakt-utils.js'
 
-// base class
-export class Component {
+function diff(vDom, dom) {
+  const isNewChildren = vDom.children.length !== dom.childNodes.length;
 
-  constructor(props){
-    this.props = props;
+  if (isNewChildren) {
+    dom.appendChild(
+      renderNode(vDom.children[vDom.children.length - 1])
+    );
+    return dom;
+  }
+
+  else {
+    return dom;
   }
 }
 
+function updateComponent(component) {
+  const oldBase = component.base;
+  const vDom    = component.render();
+
+  component.base = diff(vDom, oldBase);
+}
+
+// create DOM from virtual nodes
 function renderNode(vNode) {
-  const { nodeName, props, children} = vNode;
+  const {nodeName, props, children} = vNode;
 
   // support class
   if (isClass(nodeName)) {
     const component = new nodeName(props);
-    return renderNode(component.render());
+    Object.assign(component, {updater: updateComponent});
+    const element = renderNode(component.render());
+
+    component.base = element;
+
+    return element;
   }
 
   // support functional components
@@ -63,15 +83,15 @@ function handleProps(props, element) {
 }
 
 let currentApp;
+
 function render(element, rootElement) {
   const app = renderNode(element);
 
   currentApp ?
-  rootElement.replaceChild(app, currentApp) :
-  rootElement.appendChild(app);
+    rootElement.replaceChild(app, currentApp) :
+    rootElement.appendChild(app);
 
   currentApp = app;
-
 }
 
-export default { render };
+export default {render};
