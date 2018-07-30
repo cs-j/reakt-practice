@@ -1,6 +1,6 @@
-import Reakt from './lib/reakt.js';
+import Reakt, { Component } from './lib/reakt.js';
 
-const Title = (props) => Reakt.createElement(
+const Title = ({ text }) => Reakt.createElement(
   'h1',
   null,
   props.text
@@ -16,6 +16,6 @@ const App = () => Reakt.createElement(
 );
 
 Reakt.render(
-  Reakt.createElement(App),
+  Reakt.createElement(App, {text: 'props form class'}),
   document.getElementById('app')
 )
